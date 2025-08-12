@@ -1,25 +1,25 @@
 #!/bin/bash
+# QC & Trimming Script for Plant Virus Pipeline
+# Usage: bash qc_and_trim.sh sample_R1.fastq.gz sample_R2.fastq.gz output_dir
 
-# Define input/output files
-R1_IN="data/sample_R1.fastq.gz"
-R2_IN="data/sample_R2.fastq.gz"
-R1_OUT="results/sample_R1.trim.fastq.gz"
-R2_OUT="results/sample_R2.trim.fastq.gz"
-QC_DIR="results/qc"
-FASTP_HTML="results/fastp.html"
-MULTIQC_DIR="results/multiqc"
+R1=$1
+R2=$2
+OUTDIR=$3
 
-# Create output directories if they don't exist
-mkdir -p "$QC_DIR"
-mkdir -p "$MULTIQC_DIR"
+mkdir -p $OUTDIR/qc $OUTDIR/trimmed
 
-echo "Running FastQC for initial quality check..."
-fastqc -t 4 "$R1_IN" "$R2_IN" -o "$QC_DIR"
+echo "Running FastQC on raw reads..."
+fastqc -t 4 $R1 $R2 -o $OUTDIR/qc
 
-echo "Trimming reads with fastp..."
-fastp -i "$R1_IN" -I "$R2_IN" \
-  -o "$R1_OUT" -O "$R2_OUT" \
-  -h "$FASTP_HTML" -j "results/fastp.json"
+echo "Trimming with fastp..."
+fastp \
+  -i $R1 -I $R2 \
+  -o $OUTDIR/trimmed/trimmed_R1.fastq.gz \
+  -O $OUTDIR/trimmed/trimmed_R2.fastq.gz \
+  -j $OUTDIR/trimmed/fastp.json \
+  -h $OUTDIR/trimmed/fastp.html
 
-echo "Aggregating all QC reports with MultiQC..."
-multiqc "$QC_DIR" "$FASTP_HTML" -o "$MULTIQC_DIR"
+echo "Running MultiQC..."
+multiqc $OUTDIR -o $OUTDIR
+
+echo "QC and trimming complete!"
