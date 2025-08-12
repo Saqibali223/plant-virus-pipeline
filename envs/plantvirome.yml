@@ -1,0 +1,21 @@
+name: plantvirome
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - python=3.10
+  - snakemake
+  - fastp
+  - fastqc
+  - multiqc
+  - bowtie2
+  - samtools
+  - megahit
+  - blast
+  - kraken2
+  - virsorter
+  - pandas
+  - biopython
+  - matplotlib
+  - jupyterlab
